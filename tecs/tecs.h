@@ -324,6 +324,11 @@ private:
 				float eas_to_tas);
 
 	/**
+	 * Apply climbout restrictions to the controller
+	 */
+	void _apply_climbout_restrictions();
+
+	/**
 	 * Calculate specific total energy rate limits
 	 */
 	void _update_STE_rate_lim();
