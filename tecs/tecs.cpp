@@ -545,7 +545,14 @@ void TECS::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 			_dt = DT_DEFAULT;
 		}
 
-	} else if (_climbout_mode_active) {
+	}
+
+	_states_initalized = true;
+}
+
+void TECS::_apply_climbout_restrictions()
+{
+	if (_climbout_mode_active) {
 		// During climbout use the lower pitch angle limit specified by the
 		// calling controller
 		_pitch_setpoint_min	   = pitch_min_climbout;
@@ -566,8 +573,6 @@ void TECS::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 		_underspeed_detected = false;
 		_uncommanded_descent_recovery = false;
 	}
-
-	_states_initalized = true;
 }
 
 void TECS::_update_STE_rate_lim()
@@ -597,6 +602,9 @@ void TECS::update_pitch_throttle(const matrix::Dcmf &rotMat, float pitch, float 
 	// Initialize selected states and variables as required
 	_initialize_states(pitch, throttle_cruise, baro_altitude, pitch_min_climbout, eas_to_tas);
 
+	// Ensure that climbout restrictions are applied to prevent pitch-down on takeoff
+	_apply_climbout_restrictions();
+	
 	// Don't run TECS control algorithms when not in flight
 	if (!_in_air) {
 		return;
